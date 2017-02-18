@@ -1,15 +1,13 @@
-IDIR=../include
-SRCDIR=../src
+IDIR=include
+SRCDIR=src
 CC=gcc
 OPTS = -Wall -Wextra -pedantic
-VPATH = ../src:../include
+VPATH=$(SRCDIR):$(IDIR)
 
-csvread: csvread.o
-	
-csvread.o: csvread.c matrix.c
-	$(CC) $(OPTS) -o csvread $^
+main: main.c io.c matrix.c dataset.c
+	$(CC) $(OPTS) -o main $^
 
 .PHONY: run
 
-run: csvread
-	./csvread ../data/testy.csv
+run: main
+	./main
