@@ -11,14 +11,29 @@
 
 int main()
 {
+
+/*
+    matrix_ptr x = matrix_random(2,2);
+    matrix_print(x);
+    matrix_ptr xt = transpose(x);
+    printf("xt\n");
+    matrix_print(xt);
+    matrix_ptr xtx = multiply(xt, x);
+    matrix_print(xtx);
+*/
     srand(time(NULL));            
+    srand(1);
     model_ptr mod = model_create();
     dataset_ptr ds = dataset_from_batch( "data/iris.csv"
                                        , ','
-                                       , 10
+                                       , 200
                                        , 0
                                        , 1 );
-    model_update( mod, ds );
+    for (int i = 0; i < 15; i++)
+    {
+        model_update( mod, ds );
+    }
+    model_print( mod );
     model_destroy( mod );
-//train( "data/testy.csv", ',', 1, 2, 3 );
+    dataset_destroy( ds );
 }

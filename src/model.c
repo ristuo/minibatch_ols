@@ -16,7 +16,10 @@ struct model
 
 void model_destroy( model_ptr model )
 {
-    matrix_destroy( model->beta );
+    if (model->beta)
+    {
+        matrix_destroy( model->beta );
+    }
     for (index i = 0; i < model->beta_history.size; i++)
     {
         matrix_destroy( AT(model->beta_history,i) );
@@ -46,29 +49,29 @@ model_ptr model_create(void)
     return res;
 }
 
-number bb_stepsize( dataset_ptr ds, model_ptr model )
+number bb_stepsize( model_ptr model )
 {
     if (model->beta_history.size <= 2)
     {
-        return 0.001;
+        return 0.0000001;
     }
+
     matrix_ptr g_change = minus( AT(model->g_history,0)
                                , AT(model->g_history, 1));
     matrix_ptr beta_change = minus( AT(model->beta_history, 0)
                                   , AT(model->beta_history, 1) );
-    matrix_ptr btb = multiply( transpose(beta_change), beta_change );
-    matrix_ptr bts = multiply( transpose(beta_change), g_change );
+    matrix_ptr beta_change_t = transpose( beta_change );
+    matrix_ptr btb = multiply( beta_change_t, beta_change );
+    matrix_ptr bts = multiply( beta_change_t, g_change );
+    matrix_destroy( beta_change_t );
     matrix_destroy( g_change );
     matrix_destroy( beta_change );
+    printf("btb:\n");
+    matrix_print(btb);
     number res = element_at(btb, 0, 0) / element_at(bts, 0, 0);
     matrix_destroy(btb);
     matrix_destroy(bts);
     return res;
-}
-
-number const_stepsize( dataset_ptr ds, model_ptr model )
-{
-    return 0.01;
 }
 
 matrix_ptr gradient( dataset_ptr ds, model_ptr model )
@@ -90,16 +93,16 @@ matrix_ptr gradient( dataset_ptr ds, model_ptr model )
 
 void model_update( model_ptr model, dataset_ptr ds )
 {
-    if (model->beta == NULL)
+    if (!model->beta)
     {
         model->beta = matrix_random( ncol(independent(ds)), 1 );
     }
     else
     {
         PUSH(model->beta_history, matrix_ptr, model->beta);
-        number stepsize = bb_stepsize( ds, model );
         matrix_ptr g = gradient( ds, model );
         PUSH(model->g_history, matrix_ptr, g);
+        number stepsize = bb_stepsize( model );
         matrix_ptr scaled = scale(stepsize, g);
         model->beta = minus(model->beta, scaled);
         matrix_destroy(scaled);

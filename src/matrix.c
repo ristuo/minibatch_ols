@@ -14,35 +14,6 @@ struct matrix
     number** values;
 };
 
-void matrix_destroy( matrix_ptr x )
-{
-    for (index i = 0; i < x->nrow; i++)
-    {
-        free(x->values[i]);
-    }
-    free(x->values);
-    free(x);
-}
-
-index nrow( matrix_ptr x )
-{
-    return x->nrow;
-}
-
-index ncol( matrix_ptr x )
-{
-    return x->ncol;
-}
-
-matrix_ptr matrix_create( number** values, index nrow, index ncol )
-{
-    matrix_ptr res = malloc(sizeof(struct matrix));
-    res->nrow = nrow;
-    res->ncol = ncol;
-    res->values = values;
-    return res;
-}
-
 number** get_mem( index nrow, index ncol )
 {
     number** res = malloc(sizeof(number*) * nrow);
@@ -62,6 +33,75 @@ number** get_mem( index nrow, index ncol )
         res[i] = x;
     }
     return res;
+}
+
+matrix_ptr matrix_create( number** values, index nrow, index ncol )
+{
+    matrix_ptr res = malloc(sizeof(struct matrix));
+    res->nrow = nrow;
+    res->ncol = ncol;
+    res->values = values;
+    return res;
+}
+
+
+
+void matrix_destroy( matrix_ptr x )
+{
+    for (index i = 0; i < x->nrow; i++)
+    {
+        free(x->values[i]);
+    }
+    free(x->values);
+    free(x);
+}
+
+matrix_ptr cbind( matrix_ptr a, matrix_ptr b )
+{
+    #ifndef RELEASE
+        assert(a->nrow == b->nrow);
+        assert(a->ncol == b->ncol);
+    #endif
+    index cols = a->ncol + b->ncol;
+    number** res = get_mem( a->nrow, cols );
+    for (index i = 0; i < a->nrow; i++)
+    {
+        for (index j = 0; j < cols; j++)
+        {
+            if (j < a->ncol)
+            {
+                res[i][j] = a->values[i][j];
+            }
+            else
+            {
+                res[i][j] = b->values[i][j - a->ncol];
+            }
+        }
+    }
+    return matrix_create(res, a->nrow, cols);
+}
+
+matrix_ptr matrix_ones(index nrow, index ncol)
+{
+    number** res = get_mem(nrow, ncol);
+    for (index i = 0; i < nrow; i++)
+    {
+        for (index j = 0; j < ncol; j++)
+        {
+            res[i][j] = 1;
+        }
+    }
+    return matrix_create(res, nrow, ncol);
+}
+
+index nrow( matrix_ptr x )
+{
+    return x->nrow;
+}
+
+index ncol( matrix_ptr x )
+{
+    return x->ncol;
 }
 
 matrix_ptr matrix_from_batch( char* file_path

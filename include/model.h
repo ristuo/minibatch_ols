@@ -6,6 +6,8 @@ typedef struct model* model_ptr;
 
 model_ptr model_create(void);
 
+void model_destroy( model_ptr );
+
 void model_update( model_ptr model, dataset_ptr ds );
 
 void model_print( model_ptr mod );

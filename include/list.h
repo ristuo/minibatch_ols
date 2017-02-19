@@ -16,7 +16,8 @@ struct \
 } var; \
 
 #define INIT(list) \
-    list.values = NULL;
+    list.values = NULL;\
+    list.size = 0;
 
 #define PUSH(list, type, value)\
     list.values = realloc( list.values\

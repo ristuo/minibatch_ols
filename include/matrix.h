@@ -9,6 +9,10 @@ index nrow( matrix_ptr );
 
 index ncol( matrix_ptr );
 
+matrix_ptr cbind(matrix_ptr a, matrix_ptr b);
+
+matrix_ptr matrix_ones(index nrow, index ncol);
+
 number element_at( matrix_ptr, index i, index j );
 
 matrix_ptr matrix_create( number **, index, index );
