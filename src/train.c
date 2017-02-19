@@ -30,7 +30,8 @@ void train( char* file_path
             offset += bytes_read( input );
         }
         dataset_ptr ds = dataset_from_io( input, target_var_column );
-        //printf("\n----\n");
-        //dataset_print( ds );
+        io_res_destroy( input );
+        //do something
+        dataset_destroy( ds );
     }
 }

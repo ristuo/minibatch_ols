@@ -3,11 +3,13 @@
 #include "../include/types.h"
 typedef struct matrix* matrix_ptr;
 
-void destroy( matrix_ptr x);
+void matrix_destroy( matrix_ptr x);
 
 index nrow( matrix_ptr );
 
 index ncol( matrix_ptr );
+
+number element_at( matrix_ptr, index i, index j );
 
 matrix_ptr matrix_create( number **, index, index );
 

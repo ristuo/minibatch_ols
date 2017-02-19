@@ -16,6 +16,16 @@ struct io_res
     bool eof;
 };
 
+void io_res_destroy( io_res_ptr input )
+{
+    for (index i = 0; i < input->rows_read; i++)
+    {
+        free(input->values[i]);
+    }
+    free(input->values);
+    free(input);
+}
+
 bool eof( io_res_ptr x )
 {
     return x->eof;
@@ -203,6 +213,8 @@ io_res_ptr read_batch( char* file_path
               , k
               , bytes_read );
     #endif
+    fclose(fp);
+    free(line);
     return res;
 }
 

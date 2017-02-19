@@ -4,6 +4,8 @@
 #include "../include/types.h"
 typedef struct io_res* io_res_ptr;
 
+void io_res_destroy( io_res_ptr input );
+
 index rows_read(io_res_ptr);
 
 index cols_read(io_res_ptr);

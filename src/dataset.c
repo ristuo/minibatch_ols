@@ -14,6 +14,13 @@ struct dataset
     index ncol;
 };
 
+void dataset_destroy( dataset_ptr ds )
+{
+    matrix_destroy( ds->dependent );
+    matrix_destroy( ds->independent );
+    free(ds);
+}
+
 dataset_ptr dataset_create( number** values
                           , index nrow
                           , index ncol
@@ -22,7 +29,6 @@ dataset_ptr dataset_create( number** values
     #ifndef RELEASE
         assert(nrow > 1); 
     #endif
-
     number** dep_values = malloc(sizeof(number*) * nrow);
     number** ind_values = malloc(sizeof(number*) * nrow);
     if (!dep_values || !ind_values)
@@ -30,21 +36,20 @@ dataset_ptr dataset_create( number** values
         printf("Error in allocating memory!\n");
         exit(EXIT_FAILURE);
     }
-    index ind_index = 0;
     for (index i = 0; i < nrow; i++)
     {
+        index ind_index = 0;
         number* ind_row = malloc(sizeof(number) * (ncol-1));
         number* dep_row = malloc(sizeof(number));
         if (!ind_row || !dep_row)
         {
-            printf("Error in allocating memory!\n");
             exit(EXIT_FAILURE);
         }
         for (index j = 0; j < ncol; j++)
         {
             if (j == target_var_column)
             {
-                dep_row[0] = values[i][j];
+                *(dep_row) = values[i][j];
             }
             else
             {
@@ -73,10 +78,12 @@ dataset_ptr dataset_create( number** values
 dataset_ptr dataset_from_io( io_res_ptr io_res
                            , index target_var_column )
 {
-    return dataset_create( values(io_res)
-                         , rows_read(io_res)
-                         , cols_read(io_res)
-                         , target_var_column );
+    dataset_ptr res = dataset_create( values(io_res)
+                                    , rows_read(io_res)
+                                    , cols_read(io_res)
+                                    , target_var_column );
+    io_res_destroy( io_res );
+    return res;
 }
 
 dataset_ptr dataset_from_batch( char* file_path

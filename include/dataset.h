@@ -5,6 +5,8 @@
 #include "../include/types.h"
 typedef struct dataset* dataset_ptr;
 
+void dataset_destroy( dataset_ptr ds );
+
 matrix_ptr dependent(dataset_ptr);
 
 matrix_ptr independent(dataset_ptr);

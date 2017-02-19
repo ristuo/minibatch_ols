@@ -1,6 +1,5 @@
 #ifndef LIST_H
 #define LIST_H
-#define index int
 #define CREATE_LIST(var, type) \
 struct \
 {\

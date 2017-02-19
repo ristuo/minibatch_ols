@@ -14,13 +14,14 @@ struct matrix
     number** values;
 };
 
-void destroy( matrix_ptr x )
+void matrix_destroy( matrix_ptr x )
 {
     for (index i = 0; i < x->nrow; i++)
     {
         free(x->values[i]);
     }
     free(x->values);
+    free(x);
 }
 
 index nrow( matrix_ptr x )
@@ -131,13 +132,18 @@ void matrix_print( matrix_ptr x )
     }
 }
 
+number element_at( matrix_ptr a, index i, index j )
+{
+    return a->values[i][j];
+}
+
 matrix_ptr multiply( matrix_ptr a, matrix_ptr b )
 {
     #ifndef RELEASE
         assert(a->ncol == b->nrow); 
     #endif
-    index nrow = b->ncol;
-    index ncol = a->nrow;
+    index nrow = a->nrow;
+    index ncol = b->ncol;
     number** res = get_mem(nrow, ncol);
     for (index i = 0; i < nrow; i++) 
     {
@@ -239,7 +245,6 @@ matrix_ptr matrix_zeros( index nrow, index ncol)
 matrix_ptr matrix_random( index nrow, index ncol )
 {
     number** res = get_mem(nrow, ncol);
-    srand(time(NULL));            
     for (index i = 0; i < nrow; i++) 
     {
         for (index j = 0; j < ncol; j++)

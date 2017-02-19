@@ -2,14 +2,23 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <sys/types.h>
+#include <time.h>
 #include "../include/types.h"
 #include "../include/dataset.h"
 #include "../include/matrix.h"
 #include "../include/train.h"
+#include "../include/model.h"
 
 int main()
 {
-    matrix_ptr x = matrix_random(5,5);
-    matrix_print(x);
-//    train( "data/testy.csv", ',', 1, 2, 3 );
+    srand(time(NULL));            
+    model_ptr mod = model_create();
+    dataset_ptr ds = dataset_from_batch( "data/iris.csv"
+                                       , ','
+                                       , 10
+                                       , 0
+                                       , 1 );
+    model_update( mod, ds );
+    model_destroy( mod );
+//train( "data/testy.csv", ',', 1, 2, 3 );
 }
