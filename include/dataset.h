@@ -1,6 +1,7 @@
 #ifndef DATASET_H
 #define DATASET_H
 #include "../include/matrix.h"
+#include "../include/io.h"
 #include "../include/types.h"
 typedef struct dataset* dataset_ptr;
 
@@ -15,6 +16,8 @@ dataset_ptr dataset_from_batch( char* file_path
                               , index nrow
                               , index offset
                               , index target_var_column );
+
+dataset_ptr dataset_from_io( io_res_ptr io_res, index target_var_column );
 
 dataset_ptr dataset_create( number** values
                           , index nrow

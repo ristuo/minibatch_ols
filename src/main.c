@@ -3,12 +3,11 @@
 #include <stddef.h>
 #include <sys/types.h>
 #include "../include/types.h"
+#include "../include/dataset.h"
 #include "../include/matrix.h"
+#include "../include/train.h"
 
 int main()
 {
-    matrix_ptr x = matrix_from_batch("data/testy.csv", ',', 2, 0);
-    matrix_ptr summa = transpose(scale(3.3,x));
-    matrix_print(x);
-    matrix_print(summa);
+    train( "data/testy.csv", ',', 1, 2, 3 );
 }

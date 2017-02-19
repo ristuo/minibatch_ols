@@ -23,7 +23,7 @@ index ncol( matrix_ptr x )
     return x->ncol;
 }
 
-matrix_ptr create_matrix( number** values, index nrow, index ncol )
+matrix_ptr matrix_create( number** values, index nrow, index ncol )
 {
     matrix_ptr res = malloc(sizeof(struct matrix));
     res->nrow = nrow;
@@ -54,12 +54,12 @@ number** get_mem( index nrow, index ncol )
 }
 
 matrix_ptr matrix_from_batch( char* file_path
-                            , char separator
-                            , index nrow
-                            , index offset )
+        , char separator
+        , index nrow
+        , index offset )
 {
     io_res_ptr input = read_batch( file_path, separator, nrow, offset );
-    return create_matrix( values(input)
+    return matrix_create( values(input)
                         , rows_read(input)
                         , cols_read(input) );
 }
@@ -74,7 +74,7 @@ matrix_ptr copy( matrix_ptr x )
             values[i][j] = x->values[i][j];
         }
     }
-    return create_matrix( values, x->nrow, x->ncol );
+    return matrix_create( values, x->nrow, x->ncol );
 }
 
 matrix_ptr scale( number c, matrix_ptr x )
@@ -87,7 +87,7 @@ matrix_ptr scale( number c, matrix_ptr x )
             values[i][j] = c * x->values[i][j];
         }
     }
-    return create_matrix( values, x->nrow, x->ncol );
+    return matrix_create( values, x->nrow, x->ncol );
 }
 
 void matrix_print( matrix_ptr x )
@@ -141,7 +141,7 @@ matrix_ptr multiply( matrix_ptr a, matrix_ptr b )
             res[i][j] = accu; 
         }
     }
-    return create_matrix( res, nrow, ncol );
+    return matrix_create( res, nrow, ncol );
 }
 
 matrix_ptr sum( matrix_ptr a, matrix_ptr b )
@@ -158,7 +158,7 @@ matrix_ptr sum( matrix_ptr a, matrix_ptr b )
             res[i][j] = a->values[i][j] + b->values[i][j];
         }
     }
-    return create_matrix(res, a->nrow, a->ncol);
+    return matrix_create(res, a->nrow, a->ncol);
 }
 
 matrix_ptr transpose( matrix_ptr a )
@@ -171,7 +171,7 @@ matrix_ptr transpose( matrix_ptr a )
             res[j][i] = a->values[i][j];
         }
     }
-    return create_matrix( res, a->ncol, a->nrow );
+    return matrix_create( res, a->ncol, a->nrow );
 }
 
 matrix_ptr matrix_id( index size )
@@ -193,7 +193,24 @@ matrix_ptr matrix_id( index size )
             res[i][j] = x;
         }
     }
-    return create_matrix(res, size, size);
+    return matrix_create(res, size, size);
+}
+
+matrix_ptr minus( matrix_ptr a, matrix_ptr b )
+{
+    #ifndef RELEASE
+        assert(a->ncol == b->ncol);
+        assert(a->nrow == b->nrow);
+    #endif
+    number** res = get_mem(a->nrow, a->ncol);
+    for (index i = 0; i < a->nrow; i++)
+    {
+        for (index j = 0; j < a->ncol; j++)
+        {
+            res[i][j] = a->values[i][j] - b->values[i][j];
+        }
+    }
+    return matrix_create(res, a->nrow, a->ncol); 
 }
 
 matrix_ptr matrix_zeros( index nrow, index ncol)
@@ -206,5 +223,5 @@ matrix_ptr matrix_zeros( index nrow, index ncol)
             res[i][j] = 0;
         }
     }
-    return create_matrix(res, nrow, ncol);
+    return matrix_create(res, nrow, ncol);
 }

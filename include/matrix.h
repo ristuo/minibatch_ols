@@ -7,7 +7,7 @@ index nrow( matrix_ptr );
 
 index ncol( matrix_ptr );
 
-matrix_ptr create_matrix( number **, index, index );
+matrix_ptr matrix_create( number **, index, index );
 
 matrix_ptr matrix_from_batch( char* file_path
                             , char sep
@@ -25,6 +25,8 @@ matrix_ptr matrix_id( index size );
 matrix_ptr multiply( matrix_ptr, matrix_ptr );
 
 matrix_ptr sum( matrix_ptr, matrix_ptr );
+
+matrix_ptr minus( matrix_ptr, matrix_ptr );
 
 matrix_ptr transpose( matrix_ptr );
 

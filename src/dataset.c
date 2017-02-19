@@ -70,6 +70,15 @@ dataset_ptr dataset_create( number** values
     return res;
 }
 
+dataset_ptr dataset_from_io( io_res_ptr io_res
+                           , index target_var_column )
+{
+    return dataset_create( values(io_res)
+                         , rows_read(io_res)
+                         , cols_read(io_res)
+                         , target_var_column );
+}
+
 dataset_ptr dataset_from_batch( char* file_path
                               , char separator
                               , index nrow
@@ -80,10 +89,7 @@ dataset_ptr dataset_from_batch( char* file_path
                                   , separator
                                   , nrow
                                   , offset );
-    return dataset_create( values(io_res)
-                         , rows_read(io_res)
-                         , cols_read(io_res)
-                         , target_var_column );
+    return dataset_from_io( io_res, target_var_column );
 }
 
 matrix_ptr dependent( dataset_ptr x )

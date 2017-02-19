@@ -1,10 +1,10 @@
 IDIR=include
 SRCDIR=src
 CC=gcc
-OPTS = -Wall -Wextra -pedantic
+OPTS = -Wall -Wextra -pedantic -D DEBUG
 VPATH=$(SRCDIR):$(IDIR)
 
-main: main.c io.c matrix.c dataset.c
+main: main.c io.c matrix.c dataset.c train.c
 	$(CC) $(OPTS) -o main $^
 
 .PHONY: run

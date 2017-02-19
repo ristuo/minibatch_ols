@@ -1,5 +1,6 @@
 #ifndef IO_H
 #define IO_H
+#include <stdbool.h>
 #include "../include/types.h"
 typedef struct io_res* io_res_ptr;
 
@@ -8,6 +9,8 @@ index rows_read(io_res_ptr);
 index cols_read(io_res_ptr);
 
 index bytes_read(io_res_ptr);
+
+bool eof( io_res_ptr );
 
 char* path(io_res_ptr);
 

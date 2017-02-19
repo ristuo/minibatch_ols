@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "../include/types.h"
 #include "../include/io.h"
 #define MAX_CHARS_IN_FLOAT 50
@@ -12,7 +13,13 @@ struct io_res
     index rows_read;
     index cols_read;
     index bytes_read;
+    bool eof;
 };
+
+bool eof( io_res_ptr x )
+{
+    return x->eof;
+}
 
 index rows_read( io_res_ptr res )
 {
@@ -126,6 +133,10 @@ io_res_ptr read_batch( char* file_path
                      , index nrow
                      , index offset )
 {
+    #ifdef DEBUG
+        printf( "Starting to read a file at offset %lu\n"
+              , offset );
+    #endif
     FILE* fp = fopen(file_path, "r");
     if (!fp)
     {
@@ -178,6 +189,20 @@ io_res_ptr read_batch( char* file_path
     res->rows_read = k;
     res->bytes_read = bytes_read;
     res->path = file_path;
+    res->eof = k < nrow || getline( &line, &line_length, fp) == -1;
+    #ifdef DEBUG
+        if (res->eof) 
+        {
+            printf("Reached end of file while reading!\n");
+        }
+        else 
+        {
+            printf("No EOF here\n");
+        }
+        printf( "Read %lu rows, having %lu bytes\n"
+              , k
+              , bytes_read );
+    #endif
     return res;
 }
 
