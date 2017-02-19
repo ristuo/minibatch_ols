@@ -3,6 +3,8 @@
 #include "../include/types.h"
 typedef struct matrix* matrix_ptr;
 
+void destroy( matrix_ptr x);
+
 index nrow( matrix_ptr );
 
 index ncol( matrix_ptr );
@@ -17,6 +19,8 @@ matrix_ptr matrix_from_batch( char* file_path
 matrix_ptr scale( number, matrix_ptr );
 
 matrix_ptr copy( matrix_ptr );
+
+matrix_ptr matrix_random( index nrow, index ncol );
 
 matrix_ptr matrix_zeros( index nrow, index ncol );
 

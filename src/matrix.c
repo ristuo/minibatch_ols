@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 #include "../include/matrix.h"
 #include "../include/types.h"
 #include "../include/io.h"
@@ -12,6 +13,15 @@ struct matrix
     index ncol;
     number** values;
 };
+
+void destroy( matrix_ptr x )
+{
+    for (index i = 0; i < x->nrow; i++)
+    {
+        free(x->values[i]);
+    }
+    free(x->values);
+}
 
 index nrow( matrix_ptr x )
 {
@@ -99,7 +109,7 @@ void matrix_print( matrix_ptr x )
     {
         for (index j = 0; j < cols_to_print; j++)
         {
-            printf("%15.2f", x->values[i][j]);
+            printf("%14.3f", x->values[i][j]);
         }
         if (cols_to_print < x->ncol)
         {
@@ -224,4 +234,19 @@ matrix_ptr matrix_zeros( index nrow, index ncol)
         }
     }
     return matrix_create(res, nrow, ncol);
+}
+
+matrix_ptr matrix_random( index nrow, index ncol )
+{
+    number** res = get_mem(nrow, ncol);
+    srand(time(NULL));            
+    for (index i = 0; i < nrow; i++) 
+    {
+        for (index j = 0; j < ncol; j++)
+        {
+            number r = (number)(rand() % 1300)/1300;
+            res[i][j] = r;
+        }
+    }
+    return matrix_create( res, nrow, ncol );
 }

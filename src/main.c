@@ -9,5 +9,7 @@
 
 int main()
 {
-    train( "data/testy.csv", ',', 1, 2, 3 );
+    matrix_ptr x = matrix_random(5,5);
+    matrix_print(x);
+//    train( "data/testy.csv", ',', 1, 2, 3 );
 }
