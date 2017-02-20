@@ -1,10 +1,13 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <math.h>
 #include "../include/matrix.h"
 #include "../include/dataset.h"
 #include "../include/model.h"
 #include "../include/list.h"
+#include "../include/util.h"
 
 struct model
 {
@@ -66,11 +69,13 @@ number bb_stepsize( model_ptr model )
     matrix_destroy( beta_change_t );
     matrix_destroy( g_change );
     matrix_destroy( beta_change );
-    printf("btb:\n");
-    matrix_print(btb);
     number res = element_at(btb, 0, 0) / element_at(bts, 0, 0);
     matrix_destroy(btb);
     matrix_destroy(bts);
+    if (isnan(res))
+    {
+        return 0.00001;
+    }
     return res;
 }
 
@@ -91,11 +96,43 @@ matrix_ptr gradient( dataset_ptr ds, model_ptr model )
     return res;
 }
 
-void model_update( model_ptr model, dataset_ptr ds )
+number cost( dataset_ptr ds, model_ptr model )
 {
+    matrix_ptr x = independent(ds);
+    matrix_ptr y = dependent(ds);
+    matrix_ptr beta = model->beta;
+    matrix_ptr xtb = multiply(x, beta);
+    matrix_ptr y_minus_xtb = minus(y, xtb);
+    matrix_ptr y_minus_xtb_t = transpose(y_minus_xtb);
+    matrix_ptr res = multiply( y_minus_xtb_t, y_minus_xtb );
+    number result = element_at(res, 0, 0);
+    matrix_destroy(res);
+    matrix_destroy(y_minus_xtb_t);
+    matrix_destroy(y_minus_xtb);
+    matrix_destroy(xtb);
+    return result;
+}
+
+dataset_ptr append_ones( dataset_ptr ds )
+{
+    matrix_ptr ind = independent( ds );
+    matrix_ptr ones = matrix_ones(nrow(ind), 1); 
+    matrix_ptr new_ind = cbind(ones, ind); 
+    matrix_ptr new_dep = copy(dependent(ds));
+    matrix_destroy(ones);
+    return dataset_create_mat( new_ind, new_dep );  
+}
+
+bool model_update( model_ptr model, dataset_ptr dset )
+{
+    dataset_ptr ds = append_ones( dset );
     if (!model->beta)
     {
         model->beta = matrix_random( ncol(independent(ds)), 1 );
+        number cost_at_beta = cost( ds, model );
+        PUSH(model->value_history, number, cost_at_beta);
+        dataset_destroy(ds);
+        return false;
     }
     else
     {
@@ -105,16 +142,21 @@ void model_update( model_ptr model, dataset_ptr ds )
         number stepsize = bb_stepsize( model );
         matrix_ptr scaled = scale(stepsize, g);
         model->beta = minus(model->beta, scaled);
+        number cost_at_beta = cost( ds, model );
+        PUSH(model->value_history, number, cost_at_beta);
         matrix_destroy(scaled);
+        dataset_destroy(ds);
+        number cost1 = AT(model->value_history,1);
+        number cost2 = AT(model->value_history,0);
+        number cost_change = cost1 - cost2;
+        return ( num_abs(cost_change) < 0.001);
     }
 }
 
 void model_print( model_ptr model )
 {
+    printf( "After %lu iterations, cost is %f\n"
+         , model->value_history.size
+         , AT(model->value_history, 0) );
     matrix_print(model->beta);
-    for (index i = 0; i < model->beta_history.size; i++)
-    {
-        printf("beta_%lu\n", i+1);
-        matrix_print(model->beta_history.values[i]);
-    }
 }

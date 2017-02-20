@@ -1,12 +1,6 @@
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef UTIL_H112
+#define UTIL_H112
 #include "../include/types.h"
-index min(index a, index b)
-{
-    if (a < b)
-    {
-        return a;
-    }
-    return b;
-} __attribute__((pure))
+index ind_min(index a, index b);
+number num_abs(number a);
 #endif

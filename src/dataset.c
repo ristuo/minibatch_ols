@@ -14,6 +14,27 @@ struct dataset
     index ncol;
 };
 
+dataset_ptr dataset_create_mat( matrix_ptr independent
+                              , matrix_ptr dependent )
+{
+    dataset_ptr res = malloc( sizeof(struct dataset) );
+    if (!res)
+    {
+        printf("Memory allocation failed!\n");
+        exit(EXIT_FAILURE);
+    }
+    res->independent = independent;
+    res->dependent = dependent;
+    res->nrow = nrow(independent);
+    res->ncol = ncol(independent) + 1;
+    return res;
+}
+
+index dataset_nrow( dataset_ptr ds )
+{
+    return ds->nrow;
+}
+
 void dataset_destroy( dataset_ptr ds )
 {
     matrix_destroy( ds->dependent );
@@ -82,7 +103,6 @@ dataset_ptr dataset_from_io( io_res_ptr io_res
                                     , rows_read(io_res)
                                     , cols_read(io_res)
                                     , target_var_column );
-    io_res_destroy( io_res );
     return res;
 }
 
@@ -96,7 +116,9 @@ dataset_ptr dataset_from_batch( char* file_path
                                   , separator
                                   , nrow
                                   , offset );
-    return dataset_from_io( io_res, target_var_column );
+    dataset_ptr res = dataset_from_io( io_res, target_var_column );
+    io_res_destroy( io_res );
+    return res;
 }
 
 matrix_ptr dependent( dataset_ptr x )

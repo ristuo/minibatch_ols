@@ -6,7 +6,6 @@
 #include "../include/types.h"
 #include "../include/io.h"
 #include "../include/util.h"
-
 struct matrix
 {
     index nrow;
@@ -60,7 +59,6 @@ matrix_ptr cbind( matrix_ptr a, matrix_ptr b )
 {
     #ifndef RELEASE
         assert(a->nrow == b->nrow);
-        assert(a->ncol == b->ncol);
     #endif
     index cols = a->ncol + b->ncol;
     number** res = get_mem( a->nrow, cols );
@@ -117,7 +115,7 @@ matrix_ptr matrix_from_batch( char* file_path
 
 matrix_ptr copy( matrix_ptr x )
 {
-    number** values = get_mem(x->ncol, x->nrow); 
+    number** values = get_mem(x->nrow, x->ncol); 
     for (index i = 0; i < x->nrow; i++)
     {
         for (index j = 0; j < x->ncol; j++)
@@ -144,8 +142,8 @@ matrix_ptr scale( number c, matrix_ptr x )
 void matrix_print( matrix_ptr x )
 {
     printf("%lux%lu Matrix\n", x->nrow, x->ncol);
-    index rows_to_print = min(10, x->nrow);
-    index cols_to_print = min(5, x->ncol);
+    index rows_to_print = ind_min(10, x->nrow);
+    index cols_to_print = ind_min(5, x->ncol);
     for (index i = 0; i < rows_to_print; i++) 
     {
         for (index j = 0; j < cols_to_print; j++)
