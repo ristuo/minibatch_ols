@@ -12,7 +12,7 @@
 int main()
 {
     srand(time(NULL));            
-    index reps = 200;
+    index reps = 10;
     for (index i = 0; i < reps; i++)
     {
         train( "data/iris.csv"

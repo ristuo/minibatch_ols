@@ -13,7 +13,7 @@ void train( char* file_path
           , int max_sweeps
           , index batch_size )
 {
-    stop_cond_ptr stop = stop_cond_create( ITERATIONS, 1000 );
+    stop_cond_ptr stop = stop_cond_create( ITERATIONS, 100 );
     model_ptr model = model_create( stop );
     index offset = 0; 
     int i = 0;

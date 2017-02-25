@@ -32,8 +32,9 @@ stop_cond_ptr stop_cond_create( stop_type type, number treshold )
     return res;
 }
 
-bool should_stop( model_ptr model, stop_cond_ptr stop )
+bool should_stop( model_ptr model )
 {
+    stop_cond_ptr stop = model->stop;
     if ( stop->type == ITERATIONS )
     {
         return stop->treshold < iterations_run(model);
@@ -191,10 +192,7 @@ bool model_update( model_ptr model, dataset_ptr dset )
         PUSH(model->value_history, number, cost_at_beta);
         matrix_destroy(scaled);
         dataset_destroy(ds);
-        number cost1 = AT(model->value_history,1);
-        number cost2 = AT(model->value_history,0);
-        number cost_change = cost1 - cost2;
-        return ( num_abs(cost_change) < 0.001);
+        return ( should_stop(model) );
     }
 }
 
