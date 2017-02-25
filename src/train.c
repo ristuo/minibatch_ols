@@ -13,7 +13,8 @@ void train( char* file_path
           , int max_sweeps
           , index batch_size )
 {
-    model_ptr model = model_create();
+    stop_cond_ptr stop = stop_cond_create( ITERATIONS, 1000 );
+    model_ptr model = model_create( stop );
     index offset = 0; 
     int i = 0;
     while( i < max_sweeps )
@@ -38,10 +39,9 @@ void train( char* file_path
         dataset_destroy( ds );
         if (converged)
         {
-            printf("reached convergence!\n");
             break;
         }
     }
-    model_print(model);
+    model_print_values(model);
     model_destroy( model );
 }

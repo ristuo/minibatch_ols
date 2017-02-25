@@ -12,9 +12,13 @@
 int main()
 {
     srand(time(NULL));            
-    train( "data/iris.csv"
-         , ','
-         , 1
-         , 10000
-         , 10 );
+    index reps = 200;
+    for (index i = 0; i < reps; i++)
+    {
+        train( "data/iris.csv"
+             , ','
+             , 1
+             , 10000
+             , 100 );
+    }
 }

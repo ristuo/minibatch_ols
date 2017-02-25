@@ -3,22 +3,66 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+#include <assert.h>
 #include "../include/matrix.h"
 #include "../include/dataset.h"
 #include "../include/model.h"
 #include "../include/list.h"
 #include "../include/util.h"
+struct stop_cond
+{
+    stop_type type;
+    number treshold;
+};
 
 struct model
 {
     matrix_ptr beta;
+    stop_cond_ptr stop;
     LIST(beta_history, matrix_ptr)
     LIST(g_history, matrix_ptr)
     LIST(value_history, float)
 };
 
+stop_cond_ptr stop_cond_create( stop_type type, number treshold )
+{
+    stop_cond_ptr res = malloc( sizeof(struct stop_cond) );
+    res->type = type;
+    res->treshold = treshold;
+    return res;
+}
+
+bool should_stop( model_ptr model, stop_cond_ptr stop )
+{
+    if ( stop->type == ITERATIONS )
+    {
+        return stop->treshold < iterations_run(model);
+    }
+    if ( stop->type == CONVERGENCE )
+    {
+        number cost1 = AT(model->value_history,1);
+        number cost2 = AT(model->value_history,0);
+        number cost_change = cost1 - cost2;
+        return ( num_abs(cost_change) < 0.001);
+    }
+    assert(false);
+    return true;
+}
+
+void stop_cond_destroy( stop_cond_ptr x )
+{
+    free(x);
+}
+
+
+index iterations_run( model_ptr model )
+{
+    return model->value_history.size;
+}
+
 void model_destroy( model_ptr model )
 {
+    stop_cond_destroy( model->stop );
     if (model->beta)
     {
         matrix_destroy( model->beta );
@@ -37,7 +81,7 @@ void model_destroy( model_ptr model )
     free(model);
 }
 
-model_ptr model_create(void)
+model_ptr model_create( stop_cond_ptr x )
 {
     model_ptr res = malloc( sizeof(struct model) );
     if (!res)
@@ -46,6 +90,7 @@ model_ptr model_create(void)
         exit(EXIT_FAILURE);
     }
     res->beta = NULL;
+    res->stop = x;
     INIT(res->beta_history)
     INIT(res->g_history)
     INIT(res->value_history)
@@ -158,5 +203,14 @@ void model_print( model_ptr model )
     printf( "After %lu iterations, cost is %f\n"
          , model->value_history.size
          , AT(model->value_history, 0) );
-    matrix_print(model->beta);
+}
+
+void model_print_values( model_ptr model )
+{
+    index size = model->value_history.size;
+    for (index i = 0; i < size - 1; i++)    
+    {
+        printf("%f,", model->value_history.values[i]);
+    }
+    printf("%f\n", model->value_history.values[size-1]);
 }
