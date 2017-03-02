@@ -138,26 +138,11 @@ number* read_row(index* length, char separator, char* line, ssize_t bytes)
     return new_row;
 }
 
-io_res_ptr read_batch( char* file_path
-                     , char separator
-                     , index nrow
-                     , index offset )
+io_res_ptr read_batch_fp( FILE* fp
+                        , char separator
+                        , index nrow
+                        , char* file_path )
 {
-    #ifdef DEBUG
-        printf( "Starting to read a file at offset %lu\n"
-              , offset );
-    #endif
-    FILE* fp = fopen(file_path, "r");
-    if (!fp)
-    {
-        printf("Failure to open the file %s", file_path);
-        exit(EXIT_FAILURE);
-    }
-    if (fseek(fp, offset, SEEK_SET))
-    {
-        printf("Failure in reading the file %s", file_path);
-        exit(EXIT_FAILURE);
-    }
     number** values = malloc( sizeof(number*) * nrow ); 
     if (!values)
     {
@@ -200,6 +185,31 @@ io_res_ptr read_batch( char* file_path
     res->bytes_read = bytes_read;
     res->path = file_path;
     res->eof = k < nrow || getline( &line, &line_length, fp) == -1;
+    free(line);
+    return res;
+}
+
+io_res_ptr read_batch( char* file_path
+                     , char separator
+                     , index nrow
+                     , index offset )
+{
+    #ifdef DEBUG
+        printf( "Starting to read a file at offset %lu\n"
+              , offset );
+    #endif
+    FILE* fp = fopen(file_path, "r");
+    if (!fp)
+    {
+        printf("Failure to open the file %s", file_path);
+        exit(EXIT_FAILURE);
+    }
+    if (fseek(fp, offset, SEEK_SET))
+    {
+        printf("Failure in reading the file %s", file_path);
+        exit(EXIT_FAILURE);
+    }
+    io_res_ptr res = read_batch_fp( fp, separator, nrow, file_path );
     #ifdef DEBUG
         if (res->eof) 
         {
@@ -214,7 +224,6 @@ io_res_ptr read_batch( char* file_path
               , bytes_read );
     #endif
     fclose(fp);
-    free(line);
     return res;
 }
 
