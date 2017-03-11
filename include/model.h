@@ -15,7 +15,7 @@ typedef enum
 
 stop_cond_ptr stop_cond_create( stop_type type, number treshold );
 
-bool should_stop( model_ptr model, stop_cond_ptr stop );
+bool should_stop( model_ptr model );
 
 void stop_cond_destroy( stop_cond_ptr x );
 
@@ -26,6 +26,8 @@ void model_destroy( model_ptr );
 bool model_update( model_ptr model, dataset_ptr ds );
 
 void model_print( model_ptr mod );
+
+void model_print_coeff( model_ptr model );
 
 void model_print_values( model_ptr model );
 

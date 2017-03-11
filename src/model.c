@@ -41,10 +41,14 @@ bool should_stop( model_ptr model )
     }
     if ( stop->type == CONVERGENCE )
     {
+        if (model->value_history.size < 2)
+        {
+            return false;
+        }
         number cost1 = AT(model->value_history,1);
         number cost2 = AT(model->value_history,0);
         number cost_change = cost1 - cost2;
-        return ( num_abs(cost_change) < 0.001);
+        return ( num_abs(cost_change) < stop->treshold );
     }
     assert(false);
     return true;
@@ -185,7 +189,8 @@ bool model_update( model_ptr model, dataset_ptr dset )
         PUSH(model->beta_history, matrix_ptr, model->beta);
         matrix_ptr g = gradient( ds, model );
         PUSH(model->g_history, matrix_ptr, g);
-        number stepsize = bb_stepsize( model );
+        //number stepsize = bb_stepsize( model );
+        number stepsize = 0.000001;
         matrix_ptr scaled = scale(stepsize, g);
         model->beta = minus(model->beta, scaled);
         number cost_at_beta = cost( ds, model );
@@ -201,6 +206,11 @@ void model_print( model_ptr model )
     printf( "After %lu iterations, cost is %f\n"
          , model->value_history.size
          , AT(model->value_history, 0) );
+}
+
+void model_print_coeff( model_ptr model )
+{
+    matrix_print( model->beta );
 }
 
 void model_print_values( model_ptr model )

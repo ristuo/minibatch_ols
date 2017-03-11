@@ -18,7 +18,7 @@ number** get_mem( index nrow, index ncol )
     number** res = malloc(sizeof(number*) * nrow);
     if (!res)
     {
-        printf("Memory allocation failed!");
+        printf("Memory allocation failed at matrix operation!\n");
         exit(EXIT_FAILURE);
     }
     for (index i = 0; i < nrow; i++)

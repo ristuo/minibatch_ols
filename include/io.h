@@ -1,6 +1,7 @@
 #ifndef IO_H
 #define IO_H
 #include <stdbool.h>
+#include <stdio.h>
 #include "../include/types.h"
 typedef struct io_res* io_res_ptr;
 
@@ -24,4 +25,9 @@ io_res_ptr read_batch( char* file_path
                      , char separator
                      , index nrow
                      , index offset );
+
+io_res_ptr read_batch_fp( FILE* fp
+                        , char separator
+                        , index nrow
+                        , char* file_path );
 #endif
